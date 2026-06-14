@@ -245,5 +245,5 @@ La documentación completa de endpoints (request/response/errores) está en
 
 ## Equipo
 
-- **Nombre del equipo:** _(completar)_
-- **Integrantes:** Javier Arroyo _(agregar resto si aplica)_
+
+- **Integrantes:** Javier Arroyo 
