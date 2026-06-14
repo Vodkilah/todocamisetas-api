@@ -1,0 +1,63 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile
+    container_name: todocamisetas_app
+    ports:
+      - "8080:80"
+    volumes:
+      - .:/var/www/html
+    environment:
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_DATABASE: todocamisetas
+      DB_USERNAME: todocamisetas_user
+      DB_PASSWORD: todocamisetas_pass
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    image: mysql:8.0
+    container_name: todocamisetas_db
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: todocamisetas
+      MYSQL_USER: todocamisetas_user
+      MYSQL_PASSWORD: todocamisetas_pass
+      MYSQL_ROOT_PASSWORD: root_pass
+    ports:
+      - "3307:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./database/schema.sql:/docker-entrypoint-initdb.d/schema.sql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-proot_pass"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  adminer:
+    image: adminer
+    container_name: todocamisetas_adminer
+    restart: unless-stopped
+    ports:
+      - "8081:8080"
+    depends_on:
+      - db
+
+  swagger:
+    image: swaggerapi/swagger-ui
+    container_name: todocamisetas_swagger
+    restart: unless-stopped
+    ports:
+      - "8082:8080"
+    environment:
+      SWAGGER_JSON: /openapi.yaml
+      BASE_URL: /
+    volumes:
+      - ./openapi.yaml:/openapi.yaml
+
+volumes:
+  db_data:

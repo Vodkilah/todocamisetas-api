@@ -1,0 +1,321 @@
+{
+  "info": {
+    "name": "TodoCamisetas API",
+    "description": "Coleccion para probar la API RESTful en PHP puro de TodoCamisetas (camisetas, clientes, tallas y precio_final).",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "base_url", "value": "http://localhost:8080/api" }
+  ],
+  "item": [
+    {
+      "name": "Health",
+      "item": [
+        {
+          "name": "GET Health",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{base_url}}/health", "host": ["{{base_url}}"], "path": ["health"] }
+          },
+          "response": [
+            { "name": "200 OK", "code": 200, "body": "{\n  \"status\": \"ok\",\n  \"service\": \"TodoCamisetas API\"\n}" }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Camisetas",
+      "item": [
+        {
+          "name": "GET Listar camisetas",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{base_url}}/camisetas", "host": ["{{base_url}}"], "path": ["camisetas"] }
+          },
+          "response": [
+            { "name": "200 OK", "code": 200, "body": "{\n  \"data\": [\n    {\n      \"id\": 1,\n      \"titulo\": \"Camiseta Local 2025 - Seleccion Chilena\",\n      \"club\": \"Seleccion Chilena\",\n      \"pais\": \"Chile\",\n      \"tipo\": \"Local\",\n      \"color\": \"Rojo y Azul\",\n      \"precio\": 45000,\n      \"precio_oferta\": 38000,\n      \"detalles\": \"Edicion aniversario 2025\",\n      \"codigo_producto\": \"SCL2025L\",\n      \"precio_final\": 45000\n    }\n  ],\n  \"total\": 3\n}" }
+          ]
+        },
+        {
+          "name": "GET Listar camisetas con precio_final (cliente Preferencial)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/camisetas?cliente_id=1",
+              "host": ["{{base_url}}"],
+              "path": ["camisetas"],
+              "query": [{ "key": "cliente_id", "value": "1", "description": "90minutos (Preferencial)" }]
+            }
+          },
+          "response": [
+            { "name": "200 OK", "code": 200, "body": "{\n  \"data\": [\n    {\n      \"id\": 1,\n      \"precio\": 45000,\n      \"precio_oferta\": 38000,\n      \"precio_final\": 38000\n    }\n  ],\n  \"total\": 3\n}" }
+          ]
+        },
+        {
+          "name": "GET Detalle camiseta",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{base_url}}/camisetas/1", "host": ["{{base_url}}"], "path": ["camisetas", "1"] }
+          },
+          "response": [
+            { "name": "200 OK", "code": 200, "body": "{\n  \"data\": {\n    \"id\": 1,\n    \"titulo\": \"Camiseta Local 2025 - Seleccion Chilena\",\n    \"precio\": 45000,\n    \"precio_oferta\": 38000,\n    \"precio_final\": 45000,\n    \"tallas\": [\n      { \"relacion_id\": 1, \"talla_id\": 1, \"nombre\": \"S\", \"stock\": 10 }\n    ]\n  }\n}" },
+            { "name": "404 Not Found", "code": 404, "body": "{\n  \"error\": \"Camiseta con id 99 no encontrada\"\n}" }
+          ]
+        },
+        {
+          "name": "GET Detalle camiseta con cliente (precio_final = precio_oferta)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/camisetas/1?cliente_id=1",
+              "host": ["{{base_url}}"],
+              "path": ["camisetas", "1"],
+              "query": [{ "key": "cliente_id", "value": "1" }]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST Crear camiseta",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"titulo\": \"Camiseta Local 2025 - Colo Colo\",\n  \"club\": \"Colo Colo\",\n  \"pais\": \"Chile\",\n  \"tipo\": \"Local\",\n  \"color\": \"Blanco y Negro\",\n  \"precio\": 40000,\n  \"precio_oferta\": 35000,\n  \"detalles\": \"Edicion 2025\",\n  \"codigo_producto\": \"CCO2025L\",\n  \"tallas\": [\n    { \"nombre\": \"M\", \"stock\": 10 },\n    { \"nombre\": \"L\", \"stock\": 8 }\n  ]\n}"
+            },
+            "url": { "raw": "{{base_url}}/camisetas", "host": ["{{base_url}}"], "path": ["camisetas"] }
+          },
+          "response": [
+            { "name": "201 Created", "code": 201, "body": "{\n  \"mensaje\": \"Camiseta creada correctamente\",\n  \"data\": { \"id\": 4, \"titulo\": \"Camiseta Local 2025 - Colo Colo\", \"precio_final\": 40000, \"tallas\": [] }\n}" },
+            { "name": "422 Validacion", "code": 422, "body": "{\n  \"error\": \"Datos invalidos\",\n  \"errores\": [\"El campo 'titulo' es obligatorio\"]\n}" },
+            { "name": "409 Codigo duplicado", "code": 409, "body": "{\n  \"error\": \"Ya existe una camiseta con ese codigo_producto\"\n}" }
+          ]
+        },
+        {
+          "name": "PUT Actualizar camiseta",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"precio\": 41000,\n  \"precio_oferta\": 36000\n}"
+            },
+            "url": { "raw": "{{base_url}}/camisetas/4", "host": ["{{base_url}}"], "path": ["camisetas", "4"] }
+          },
+          "response": [
+            { "name": "200 OK", "code": 200, "body": "{\n  \"mensaje\": \"Camiseta actualizada correctamente\",\n  \"data\": { \"id\": 4, \"precio\": 41000, \"precio_oferta\": 36000 }\n}" },
+            { "name": "404 No encontrada", "code": 404, "body": "{\n  \"error\": \"Camiseta con id 99 no encontrada\"\n}" }
+          ]
+        },
+        {
+          "name": "DELETE Eliminar camiseta",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": { "raw": "{{base_url}}/camisetas/4", "host": ["{{base_url}}"], "path": ["camisetas", "4"] }
+          },
+          "response": [
+            { "name": "200 OK", "code": 200, "body": "{\n  \"mensaje\": \"Camiseta eliminada correctamente\"\n}" },
+            { "name": "409 Tiene pedidos", "code": 409, "body": "{\n  \"error\": \"No se puede eliminar la camiseta: tiene pedidos asociados\"\n}" }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Tallas de camiseta",
+      "item": [
+        {
+          "name": "GET Listar tallas de una camiseta",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{base_url}}/camisetas/1/tallas", "host": ["{{base_url}}"], "path": ["camisetas", "1", "tallas"] }
+          },
+          "response": [
+            { "name": "200 OK", "code": 200, "body": "{\n  \"data\": [\n    { \"relacion_id\": 1, \"talla_id\": 1, \"nombre\": \"S\", \"stock\": 10 },\n    { \"relacion_id\": 2, \"talla_id\": 2, \"nombre\": \"M\", \"stock\": 15 }\n  ]\n}" }
+          ]
+        },
+        {
+          "name": "POST Asociar talla a camiseta",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"nombre\": \"XL\",\n  \"stock\": 5\n}" },
+            "url": { "raw": "{{base_url}}/camisetas/2/tallas", "host": ["{{base_url}}"], "path": ["camisetas", "2", "tallas"] }
+          },
+          "response": [
+            { "name": "201 Created", "code": 201, "body": "{\n  \"mensaje\": \"Talla asociada correctamente a la camiseta\",\n  \"data\": [ { \"relacion_id\": 12, \"talla_id\": 4, \"nombre\": \"XL\", \"stock\": 5 } ]\n}" },
+            { "name": "404 Camiseta no existe", "code": 404, "body": "{\n  \"error\": \"Camiseta con id 99 no encontrada\"\n}" },
+            { "name": "422 Validacion", "code": 422, "body": "{\n  \"error\": \"Datos invalidos\",\n  \"errores\": [\"El campo 'stock' es obligatorio y debe ser un entero >= 0\"]\n}" }
+          ]
+        },
+        {
+          "name": "PUT Actualizar stock de talla",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"stock\": 25\n}" },
+            "url": { "raw": "{{base_url}}/camisetas/1/tallas/2", "host": ["{{base_url}}"], "path": ["camisetas", "1", "tallas", "2"] }
+          },
+          "response": [
+            { "name": "200 OK", "code": 200, "body": "{\n  \"mensaje\": \"Stock de talla actualizado correctamente\",\n  \"data\": [ { \"relacion_id\": 2, \"talla_id\": 2, \"nombre\": \"M\", \"stock\": 25 } ]\n}" },
+            { "name": "404 Relacion no existe", "code": 404, "body": "{\n  \"error\": \"Esta camiseta no tiene asociada esa talla\"\n}" }
+          ]
+        },
+        {
+          "name": "DELETE Desvincular talla de camiseta",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": { "raw": "{{base_url}}/camisetas/2/tallas/4", "host": ["{{base_url}}"], "path": ["camisetas", "2", "tallas", "4"] }
+          },
+          "response": [
+            { "name": "200 OK", "code": 200, "body": "{\n  \"mensaje\": \"Talla desvinculada de la camiseta correctamente\"\n}" },
+            { "name": "404 Relacion no existe", "code": 404, "body": "{\n  \"error\": \"Esta camiseta no tiene asociada esa talla\"\n}" }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Clientes",
+      "item": [
+        {
+          "name": "GET Listar clientes",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{base_url}}/clientes", "host": ["{{base_url}}"], "path": ["clientes"] }
+          },
+          "response": [
+            { "name": "200 OK", "code": 200, "body": "{\n  \"data\": [\n    { \"id\": 1, \"nombre_comercial\": \"90minutos\", \"categoria\": \"Preferencial\", \"porcentaje_oferta\": \"15.00\" },\n    { \"id\": 2, \"nombre_comercial\": \"tdeportes\", \"categoria\": \"Regular\", \"porcentaje_oferta\": \"0.00\" }\n  ],\n  \"total\": 2\n}" }
+          ]
+        },
+        {
+          "name": "GET Detalle cliente",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{base_url}}/clientes/1", "host": ["{{base_url}}"], "path": ["clientes", "1"] }
+          },
+          "response": [
+            { "name": "200 OK", "code": 200, "body": "{\n  \"data\": { \"id\": 1, \"nombre_comercial\": \"90minutos\", \"categoria\": \"Preferencial\" }\n}" },
+            { "name": "404 No encontrado", "code": 404, "body": "{\n  \"error\": \"Cliente con id 99 no encontrado\"\n}" }
+          ]
+        },
+        {
+          "name": "POST Crear cliente",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre_comercial\": \"Deportes Sur\",\n  \"rut\": \"78.111.222-4\",\n  \"direccion\": \"Temuco, Araucania\",\n  \"categoria\": \"Regular\",\n  \"contacto_nombre\": \"Ana Reyes\",\n  \"contacto_email\": \"ana@deportessur.cl\",\n  \"porcentaje_oferta\": 5\n}"
+            },
+            "url": { "raw": "{{base_url}}/clientes", "host": ["{{base_url}}"], "path": ["clientes"] }
+          },
+          "response": [
+            { "name": "201 Created", "code": 201, "body": "{\n  \"mensaje\": \"Cliente creado correctamente\",\n  \"data\": { \"id\": 3, \"nombre_comercial\": \"Deportes Sur\" }\n}" },
+            { "name": "422 Validacion", "code": 422, "body": "{\n  \"error\": \"Datos invalidos\",\n  \"errores\": [\"El campo 'rut' es obligatorio\"]\n}" },
+            { "name": "409 RUT duplicado", "code": 409, "body": "{\n  \"error\": \"Ya existe un cliente con ese RUT\"\n}" }
+          ]
+        },
+        {
+          "name": "PUT Actualizar cliente",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"porcentaje_oferta\": 20,\n  \"categoria\": \"Preferencial\"\n}" },
+            "url": { "raw": "{{base_url}}/clientes/3", "host": ["{{base_url}}"], "path": ["clientes", "3"] }
+          },
+          "response": [
+            { "name": "200 OK", "code": 200, "body": "{\n  \"mensaje\": \"Cliente actualizado correctamente\",\n  \"data\": { \"id\": 3, \"categoria\": \"Preferencial\", \"porcentaje_oferta\": \"20.00\" }\n}" },
+            { "name": "404 No encontrado", "code": 404, "body": "{\n  \"error\": \"Cliente con id 99 no encontrado\"\n}" }
+          ]
+        },
+        {
+          "name": "DELETE Eliminar cliente",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": { "raw": "{{base_url}}/clientes/3", "host": ["{{base_url}}"], "path": ["clientes", "3"] }
+          },
+          "response": [
+            { "name": "200 OK", "code": 200, "body": "{\n  \"mensaje\": \"Cliente eliminado correctamente\"\n}" },
+            { "name": "409 Tiene pedidos", "code": 409, "body": "{\n  \"error\": \"No se puede eliminar el cliente: tiene camisetas/pedidos asociados\"\n}" }
+          ]
+        },
+        {
+          "name": "GET Camisetas pedidas por cliente",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{base_url}}/clientes/1/camisetas", "host": ["{{base_url}}"], "path": ["clientes", "1", "camisetas"] }
+          },
+          "response": [
+            { "name": "200 OK", "code": 200, "body": "{\n  \"data\": [\n    { \"pedido_id\": 1, \"cantidad\": 20, \"id\": 1, \"titulo\": \"Camiseta Local 2025 - Seleccion Chilena\", \"precio\": 45000, \"precio_oferta\": 38000, \"precio_final\": 38000 }\n  ]\n}" }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Tallas (catalogo)",
+      "item": [
+        {
+          "name": "GET Listar catalogo de tallas",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{base_url}}/tallas", "host": ["{{base_url}}"], "path": ["tallas"] }
+          },
+          "response": [
+            { "name": "200 OK", "code": 200, "body": "{\n  \"data\": [\n    { \"id\": 1, \"nombre\": \"S\" },\n    { \"id\": 2, \"nombre\": \"M\" },\n    { \"id\": 3, \"nombre\": \"L\" },\n    { \"id\": 4, \"nombre\": \"XL\" }\n  ]\n}" }
+          ]
+        },
+        {
+          "name": "POST Crear talla",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"nombre\": \"XXL\"\n}" },
+            "url": { "raw": "{{base_url}}/tallas", "host": ["{{base_url}}"], "path": ["tallas"] }
+          },
+          "response": [
+            { "name": "201 Created", "code": 201, "body": "{\n  \"mensaje\": \"Talla creada correctamente\",\n  \"data\": { \"id\": 5, \"nombre\": \"XXL\" }\n}" },
+            { "name": "409 Ya existe", "code": 409, "body": "{\n  \"error\": \"Ya existe una talla con ese nombre\"\n}" }
+          ]
+        },
+        {
+          "name": "PUT Actualizar talla",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"nombre\": \"3XL\"\n}" },
+            "url": { "raw": "{{base_url}}/tallas/5", "host": ["{{base_url}}"], "path": ["tallas", "5"] }
+          },
+          "response": [
+            { "name": "200 OK", "code": 200, "body": "{\n  \"mensaje\": \"Talla actualizada correctamente\",\n  \"data\": { \"id\": 5, \"nombre\": \"3XL\" }\n}" },
+            { "name": "404 No encontrada", "code": 404, "body": "{\n  \"error\": \"Talla con id 99 no encontrada\"\n}" }
+          ]
+        },
+        {
+          "name": "DELETE Eliminar talla",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": { "raw": "{{base_url}}/tallas/5", "host": ["{{base_url}}"], "path": ["tallas", "5"] }
+          },
+          "response": [
+            { "name": "200 OK", "code": 200, "body": "{\n  \"mensaje\": \"Talla eliminada correctamente\"\n}" },
+            { "name": "404 No encontrada", "code": 404, "body": "{\n  \"error\": \"Talla con id 99 no encontrada\"\n}" }
+          ]
+        }
+      ]
+    }
+  ]
+}
